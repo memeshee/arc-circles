@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { createConfig, http, WagmiProvider } from "wagmi";
+import { createConfig, fallback, http, WagmiProvider } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { arcMainnet } from "./arc";
+import { arcMainnet, ARC_RPCS } from "./arc";
 
 const config = createConfig({
   chains: [arcMainnet],
   connectors: [injected()],
-  transports: { [arcMainnet.id]: http("https://rpc.mainnet.arc.io") },
+  transports: {
+    [arcMainnet.id]: fallback(ARC_RPCS.map((url) => http(url, { batch: true }))),
+  },
 });
 
 export function Providers({ children }: { children: ReactNode }) {

@@ -10,6 +10,15 @@ export const arcMainnet = defineChain({
   },
 });
 
+// Public RPCs in priority order — official endpoint has timed out under
+// load before; clients fall through automatically.
+export const ARC_RPCS = [
+  "https://rpc.mainnet.arc.io",
+  "https://rpc.blockdaemon.mainnet.arc.io",
+  "https://rpc.drpc.mainnet.arc.io",
+  "https://rpc.quicknode.mainnet.arc.io",
+] as const;
+
 // Native USDC ERC-20 view on Arc (6 decimals). Same asset as gas (18-decimal native view) — never double-count.
 export const USDC = "0x3600000000000000000000000000000000000000" as const;
 export const USDC_DECIMALS = 6;
