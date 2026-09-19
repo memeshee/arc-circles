@@ -17,7 +17,7 @@ export const EXPLORER = "https://explorer.arc.io";
 
 // Set by deploy (web/lib/deployed.ts is rewritten at deploy time).
 export const FACTORY_ADDRESS =
-  "0x0000000000000000000000000000000000000000" as const;
+  "0x6792E51FBD24f9315282BD5b6c5E713dCc779C69" as const;
 
 export const factoryAbi = [
   {
