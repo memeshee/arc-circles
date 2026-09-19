@@ -96,7 +96,7 @@ export default function Home() {
       <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-8 px-6 py-8">
         <header className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Circles</h1>
+            <h1 className="text-2xl font-bold">TheRing</h1>
             <p className="text-sm text-zinc-500">Rotating savings on Arc — paid in USDC, settled in seconds.</p>
           </div>
           <ConnectButton />

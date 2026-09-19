@@ -10,11 +10,10 @@ export const arcMainnet = defineChain({
   },
 });
 
-// Public RPCs in priority order — official endpoint has timed out under
-// load before; clients fall through automatically. NOTE: no quicknode —
-// its domain is on common adblock lists (ERR_BLOCKED_BY_CLIENT), which
-// breaks reads for users with blockers installed.
+// Reads go through the same-origin /api/rpc proxy first (paid key stays
+// server-side, adblock-proof), then fall through to public endpoints.
 export const ARC_RPCS = [
+  "/api/rpc",
   "https://rpc.mainnet.arc.io",
   "https://rpc.blockdaemon.mainnet.arc.io",
   "https://rpc.drpc.mainnet.arc.io",

@@ -1,8 +1,8 @@
-# Circles — Rotating Savings on Arc
+# TheRing — Rotating Savings on Arc
 
 Onchain rotating savings circles (ROSCA) settled in **native USDC on [Arc](https://arc.network)** (chain 5042). Fixed members, fixed payout order, late fees shared with the group — a savings habit for people the banking system prices out, running on rails where a $2 weekly contribution isn't eaten by fees.
 
-**Live:** https://arc-circles.vercel.app · **Contracts (Arc mainnet):** factory [`0x6792E51FBD24f9315282BD5b6c5E713dCc779C69`](https://explorer.arc.io/address/0x6792E51FBD24f9315282BD5b6c5E713dCc779C69) · **Track:** Arc Microgrants (DoraHacks, deadline Oct 14 23:59 ET)
+**Live:** https://thering-arc.vercel.app · **Contracts (Arc mainnet):** factory [`0x6792E51FBD24f9315282BD5b6c5E713dCc779C69`](https://explorer.arc.io/address/0x6792E51FBD24f9315282BD5b6c5E713dCc779C69) · **Track:** Arc Microgrants (DoraHacks, deadline Oct 14 23:59 ET)
 
 ---
 
@@ -151,7 +151,7 @@ Round r (each `roundDuration` seconds)
 **Try it live:**
 
 1. Add Arc to your wallet: chain ID **5042**, RPC `https://rpc.mainnet.arc.io`, explorer `https://explorer.arc.io`. Fund with USDC on Arc ([bridge](https://bridge.circle.com)).
-2. Open https://arc-circles.vercel.app, connect — the app pins chain 5042 and auto-switches.
+2. Open https://thering-arc.vercel.app, connect — the app pins chain 5042 and auto-switches.
 3. Create a circle (members = one address per line, payout top→bottom), or open an existing one: `…/circle/0x…`.
 4. Approve → Pay → (anyone) Trigger payout. Activity feed reads straight from contract logs — no subgraph needed.
 
