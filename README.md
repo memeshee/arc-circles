@@ -113,11 +113,11 @@ flowchart TB
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Open: createCircle(members, contribution, duration)
-    Open --> Open: contribute() / contributeFor()\n(paid[r][m] = true; late → +5% to pot)
-    Open --> PaidOut: payout()\n(all paid OR deadline passed;\nrecipient must be paid up)
-    PaidOut --> Open: round r+1\n(r+1 < N)
-    PaidOut --> [*]: complete\n(r+1 == N, CircleCompleted)
+    [*] --> Open: createCircle
+    Open --> Open: contribute or cover late fee goes to pot
+    Open --> PaidOut: payout when all paid or deadline passed
+    PaidOut --> Open: next round
+    PaidOut --> [*]: final round complete
 ```
 
 **Key invariants** (enforced onchain, covered by tests):
