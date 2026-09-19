@@ -21,7 +21,7 @@ export function ConnectButton() {
   if (!isConnected) {
     return (
       <button
-        onClick={() => connect({ connector: connectors[0] })}
+        onClick={() => connect({ connector: connectors[0], chainId: arcMainnet.id })}
         disabled={isPending}
         className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-black"
       >

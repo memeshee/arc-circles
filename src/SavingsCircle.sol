@@ -53,7 +53,9 @@ contract SavingsCircle {
     error NotCreator();
     error AlreadyComplete();
 
-    event Contributed(uint256 indexed round, address indexed member, address indexed payer, uint256 amount, uint256 penalty);
+    event Contributed(
+        uint256 indexed round, address indexed member, address indexed payer, uint256 amount, uint256 penalty
+    );
     event PaidOut(uint256 indexed round, address indexed recipient, uint256 amount);
     event CircleCompleted();
     event YieldAdapterSet(address indexed adapter);
@@ -208,9 +210,7 @@ contract CircleFactory {
         address[] calldata members,
         uint256 penaltyBps
     ) external returns (address circle) {
-        SavingsCircle c = new SavingsCircle(
-            token, contribution, roundDuration, members, penaltyBps, msg.sender
-        );
+        SavingsCircle c = new SavingsCircle(token, contribution, roundDuration, members, penaltyBps, msg.sender);
         circle = address(c);
         allCircles.push(circle);
         isCircle[circle] = true;

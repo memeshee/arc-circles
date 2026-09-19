@@ -11,12 +11,13 @@ export const arcMainnet = defineChain({
 });
 
 // Public RPCs in priority order — official endpoint has timed out under
-// load before; clients fall through automatically.
+// load before; clients fall through automatically. NOTE: no quicknode —
+// its domain is on common adblock lists (ERR_BLOCKED_BY_CLIENT), which
+// breaks reads for users with blockers installed.
 export const ARC_RPCS = [
   "https://rpc.mainnet.arc.io",
   "https://rpc.blockdaemon.mainnet.arc.io",
   "https://rpc.drpc.mainnet.arc.io",
-  "https://rpc.quicknode.mainnet.arc.io",
 ] as const;
 
 // Native USDC ERC-20 view on Arc (6 decimals). Same asset as gas (18-decimal native view) — never double-count.

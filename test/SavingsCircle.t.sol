@@ -79,25 +79,34 @@ contract SavingsCircleTest is Test {
         SavingsCircle c = _newCircle();
         _approveAll(c);
         // Round 0 -> alice gets 30
-        vm.prank(alice); c.contribute();
-        vm.prank(bob); c.contribute();
-        vm.prank(cara); c.contribute();
+        vm.prank(alice);
+        c.contribute();
+        vm.prank(bob);
+        c.contribute();
+        vm.prank(cara);
+        c.contribute();
         assertTrue(c.roundFullyPaid(0));
         uint256 before = token.balanceOf(alice);
         c.payout();
         assertEq(token.balanceOf(alice) - before, 30e6);
         assertEq(uint256(c.currentRound()), 1);
         // Round 1 -> bob
-        vm.prank(alice); c.contribute();
-        vm.prank(bob); c.contribute();
-        vm.prank(cara); c.contribute();
+        vm.prank(alice);
+        c.contribute();
+        vm.prank(bob);
+        c.contribute();
+        vm.prank(cara);
+        c.contribute();
         before = token.balanceOf(bob);
         c.payout();
         assertEq(token.balanceOf(bob) - before, 30e6);
         // Round 2 -> cara, completes circle
-        vm.prank(alice); c.contribute();
-        vm.prank(bob); c.contribute();
-        vm.prank(cara); c.contribute();
+        vm.prank(alice);
+        c.contribute();
+        vm.prank(bob);
+        c.contribute();
+        vm.prank(cara);
+        c.contribute();
         before = token.balanceOf(cara);
         c.payout();
         assertEq(token.balanceOf(cara) - before, 30e6);
@@ -107,10 +116,13 @@ contract SavingsCircleTest is Test {
     function testLatePenaltyStaysInPot() public {
         SavingsCircle c = _newCircle();
         _approveAll(c);
-        vm.prank(alice); c.contribute();
-        vm.prank(bob); c.contribute();
+        vm.prank(alice);
+        c.contribute();
+        vm.prank(bob);
+        c.contribute();
         skip(ROUND + 1); // cara is late: 5% of 10 = 0.5 USDC penalty
-        vm.prank(cara); c.contribute();
+        vm.prank(cara);
+        c.contribute();
         uint256 before = token.balanceOf(alice);
         c.payout();
         assertEq(token.balanceOf(alice) - before, 30.5e6);
@@ -120,13 +132,16 @@ contract SavingsCircleTest is Test {
         SavingsCircle c = _newCircle();
         _approveAll(c);
         // alice (round-0 recipient) does not pay; others do
-        vm.prank(bob); c.contribute();
-        vm.prank(cara); c.contribute();
+        vm.prank(bob);
+        c.contribute();
+        vm.prank(cara);
+        c.contribute();
         skip(ROUND + 1);
         vm.expectRevert(SavingsCircle.RecipientInArrears.selector);
         c.payout();
         // bob covers for alice, payout succeeds
-        vm.prank(bob); c.contributeFor(alice);
+        vm.prank(bob);
+        c.contributeFor(alice);
         c.payout();
         assertEq(uint256(c.currentRound()), 1);
     }
@@ -134,9 +149,12 @@ contract SavingsCircleTest is Test {
     function testEarlyPayoutWhenAllPaid() public {
         SavingsCircle c = _newCircle();
         _approveAll(c);
-        vm.prank(alice); c.contribute();
-        vm.prank(bob); c.contribute();
-        vm.prank(cara); c.contribute();
+        vm.prank(alice);
+        c.contribute();
+        vm.prank(bob);
+        c.contribute();
+        vm.prank(cara);
+        c.contribute();
         // no time skip: all paid -> payout allowed before deadline
         c.payout();
         assertEq(uint256(c.currentRound()), 1);
@@ -145,7 +163,8 @@ contract SavingsCircleTest is Test {
     function testRoundNotClosedReverts() public {
         SavingsCircle c = _newCircle();
         _approveAll(c);
-        vm.prank(alice); c.contribute();
+        vm.prank(alice);
+        c.contribute();
         vm.expectRevert(SavingsCircle.RoundNotClosed.selector);
         c.payout();
     }
@@ -153,7 +172,8 @@ contract SavingsCircleTest is Test {
     function testDoublePayReverts() public {
         SavingsCircle c = _newCircle();
         _approveAll(c);
-        vm.prank(alice); c.contribute();
+        vm.prank(alice);
+        c.contribute();
         vm.prank(alice);
         vm.expectRevert(SavingsCircle.AlreadyPaid.selector);
         c.contribute();
