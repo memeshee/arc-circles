@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   useAccount,
+  useChainId,
   usePublicClient,
   useReadContract,
   useReadContracts,
+  useSwitchChain,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
@@ -18,6 +20,7 @@ import {
   EXPLORER,
   USDC,
   USDC_DECIMALS,
+  arcMainnet,
   circleAbi,
   erc20Abi,
   fmtUSDC,
@@ -96,6 +99,28 @@ function CircleView({ addr }: { addr: `0x${string}` }) {
   });
 
   const { writeContract, data: hash, isPending } = useWriteContract();
+  const chainId = useChainId();
+  const { chains, switchChainAsync } = useSwitchChain();
+  const [netError, setNetError] = useState<string | null>(null);
+
+  // Guard every write: force Arc first, never silently land on Ethereum.
+  async function guardedWrite(args: Parameters<typeof writeContract>[0]) {
+    setNetError(null);
+    if (chainId !== arcMainnet.id) {
+      const hasArc = chains.some((c) => c.id === arcMainnet.id);
+      try {
+        await switchChainAsync({ chainId: arcMainnet.id });
+      } catch {
+        setNetError(
+          hasArc
+            ? "Approve the switch to Arc in your wallet, then retry."
+            : "Arc not in wallet — add Arc (chain 5042) manually, then retry."
+        );
+        return;
+      }
+    }
+    writeContract({ ...args, chainId: arcMainnet.id } as typeof args);
+  }
   const { isLoading: confirming, isSuccess: txSuccess } = useWaitForTransactionReceipt({ hash });
   useEffect(() => {
     if (txSuccess) {
@@ -128,6 +153,7 @@ function CircleView({ addr }: { addr: `0x${string}` }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {netError && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{netError}</p>}
       <div className="rounded-2xl border p-6">
         <div className="flex items-baseline justify-between">
           <h2 className="font-mono text-lg">{shorten(addr)}</h2>
@@ -155,7 +181,7 @@ function CircleView({ addr }: { addr: `0x${string}` }) {
           {!approved ? (
             <button
               disabled={isPending || confirming || !me || contribution === undefined}
-              onClick={() => writeContract({ address: USDC, abi: erc20Abi, functionName: "approve", args: [addr, need] })}
+              onClick={() => guardedWrite({ address: USDC, abi: erc20Abi, functionName: "approve", args: [addr, need] })}
               className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-black"
             >
               {confirming ? "Confirming…" : `1/2 Approve USDC`}
@@ -163,7 +189,7 @@ function CircleView({ addr }: { addr: `0x${string}` }) {
           ) : (
             <button
               disabled={isPending || confirming || !me}
-              onClick={() => writeContract({ address: addr, abi: circleAbi, functionName: "contribute" })}
+              onClick={() => guardedWrite({ address: addr, abi: circleAbi, functionName: "contribute" })}
               className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-black"
             >
               {confirming ? "Confirming…" : `2/2 Pay ${contribution !== undefined ? formatUnits(contribution, USDC_DECIMALS) : ""} USDC`}
@@ -171,7 +197,7 @@ function CircleView({ addr }: { addr: `0x${string}` }) {
           )}
           <button
             disabled={isPending || confirming || !payoutOpen}
-            onClick={() => writeContract({ address: addr, abi: circleAbi, functionName: "payout" })}
+            onClick={() => guardedWrite({ address: addr, abi: circleAbi, functionName: "payout" })}
             title={!payoutOpen ? "Opens when everyone paid or the deadline passes" : "Send the pot to this round's recipient"}
             className="rounded-full border px-5 py-2 text-sm font-medium disabled:opacity-40"
           >
@@ -206,7 +232,7 @@ function CircleView({ addr }: { addr: `0x${string}` }) {
             />
             <button
               disabled={isPending || confirming || !cover}
-              onClick={() => writeContract({ address: addr, abi: circleAbi, functionName: "contributeFor", args: [cover as `0x${string}`] })}
+              onClick={() => guardedWrite({ address: addr, abi: circleAbi, functionName: "contributeFor", args: [cover as `0x${string}`] })}
               className="rounded-full border px-4 py-2 text-sm disabled:opacity-40"
             >
               Cover them

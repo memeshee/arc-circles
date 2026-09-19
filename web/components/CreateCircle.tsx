@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { isAddress, parseEventLogs, parseUnits } from "viem";
-import { useAccount, usePublicClient, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { FACTORY_ADDRESS, USDC, USDC_DECIMALS, factoryAbi } from "../lib/arc";
+import { useAccount, useChainId, usePublicClient, useSwitchChain, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { FACTORY_ADDRESS, USDC, USDC_DECIMALS, arcMainnet, factoryAbi } from "../lib/arc";
 
 const PRESETS = [
   { label: "5 minutes (demo)", secs: 300 },
@@ -21,6 +21,9 @@ export function CreateCircle() {
   const [secs, setSecs] = useState(300);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<string | null>(null);
+  const { address: me } = useAccount();
+  const chainId = useChainId();
+  const { chains, switchChainAsync } = useSwitchChain();
   const { writeContract, data: hash, isPending, reset } = useWriteContract();
   const { isLoading: confirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
@@ -43,7 +46,23 @@ export function CreateCircle() {
     }
     if (contrib <= BigInt(0)) return setError("Contribution must be > 0.");
     if (!Number.isInteger(secs) || secs < 60) return setError("Round length must be ≥ 60 seconds.");
+    if (!me) return setError("Connect your wallet first.");
+    // Force the wallet onto Arc (chain 5042) before sending — silently
+    // dropping back to Ethereum mainnet otherwise burns real ETH gas.
+    if (chainId !== arcMainnet.id) {
+      const hasArc = chains.some((c) => c.id === arcMainnet.id);
+      try {
+        await switchChainAsync({ chainId: arcMainnet.id });
+      } catch {
+        return setError(
+          hasArc
+            ? "Please approve the network switch to Arc in your wallet, then try again."
+            : "Arc network not in your wallet — switch to Arc (chain 5042, https://rpc.mainnet.arc.io) manually, then retry."
+        );
+      }
+    }
     writeContract({
+      chainId: arcMainnet.id,
       address: FACTORY_ADDRESS,
       abi: factoryAbi,
       functionName: "createCircle",
