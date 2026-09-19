@@ -24,7 +24,7 @@ export function CreateCircle() {
   const { writeContract, data: hash, isPending, reset } = useWriteContract();
   const { isLoading: confirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
-  const notDeployed = FACTORY_ADDRESS === "0x0000000000000000000000000000000000000000";
+  const notDeployed = FACTORY_ADDRESS === "0x0000000000000000000000000000000000000000" as string;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
