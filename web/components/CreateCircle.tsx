@@ -106,10 +106,10 @@ export function CreateCircle() {
           <select
             value={secs}
             onChange={(e) => setSecs(Number(e.target.value))}
-            className="rounded-lg border p-2"
+            className="rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
           >
             {PRESETS.map((p) => (
-              <option key={p.secs} value={p.secs}>
+              <option key={p.secs} value={p.secs} className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
                 {p.label}
               </option>
             ))}

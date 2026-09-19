@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useAccount, useChainId, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 import { arcMainnet } from "../lib/arc";
 import { shorten } from "../lib/arc";
@@ -10,6 +11,12 @@ export function ConnectButton() {
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: switching } = useSwitchChain();
+  const wrongNet = isConnected && chainId !== arcMainnet.id;
+
+  // Auto-switch to Arc as soon as the wallet connects on the wrong chain.
+  useEffect(() => {
+    if (wrongNet && !switching) switchChain({ chainId: arcMainnet.id });
+  }, [wrongNet, switching, switchChain]);
 
   if (!isConnected) {
     return (
@@ -29,7 +36,7 @@ export function ConnectButton() {
         disabled={switching}
         className="rounded-full bg-red-600 px-5 py-2 text-sm font-medium text-white hover:bg-red-500"
       >
-        {switching ? "Switching…" : "Switch to Arc"}
+        {switching ? "Switching to Arc…" : "Switch to Arc"}
       </button>
     );
   }
